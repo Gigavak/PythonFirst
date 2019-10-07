@@ -1,3 +1,4 @@
+import requests
 import telebot
 
 bot = telebot.TeleBot('963712153:AAFHy_zyV91X8Rks7t4LQKRxPP2QmyDTyg4')
@@ -14,8 +15,8 @@ def send_text(message):
         bot.send_message(message.chat.id, 'Привет, мой создатель')
     elif message.text.lower() == 'пока':
         bot.send_message(message.chat.id, 'Прощай, создатель')
-    elif message.text.lower() == 'я тебя люблю':
-        bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
+    elif message.text.lower() == 'Кто я':
+        bot.send_sticker(message.chat.id, 'CAADAwADGQEAAsbNxQGS96BYEc2t7hYE')
 
 @bot.message_handler(content_types=['sticker'])
 def sticker_id(message):
