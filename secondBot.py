@@ -12,11 +12,11 @@ def start_message(message):
 @bot.message_handler(content_types=['text'])
 def send_text(message):
     if message.text.lower() == 'привет':
-        bot.send_message(message.chat.id, 'Привет, мой создатель')
+        bot.send_message(message.chat.id, 'Hi nigga')
     elif message.text.lower() == 'пока':
-        bot.send_message(message.chat.id, 'Прощай, создатель')
+        bot.send_message(message.chat.id, 'Bye nigga')
     elif message.text.lower() == 'Кто я':
-        bot.send_sticker(message.chat.id, 'CAADAwADGQEAAsbNxQGS96BYEc2t7hYE')
+        bot.send_sticker(message.chat.id, 'CAADAwADjgIAAsbNxQEarlhixib2CBYE')
 
 @bot.message_handler(content_types=['sticker'])
 def sticker_id(message):
