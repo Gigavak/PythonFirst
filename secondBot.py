@@ -2,7 +2,7 @@ import telebot
 
 bot = telebot.TeleBot('963712153:AAFHy_zyV91X8Rks7t4LQKRxPP2QmyDTyg4')
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True, True)
-keyboard1.row('Привет', 'Пока', 'Time')
+keyboard1.row('Прошел', 'Слушок', 'Что ты')
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
