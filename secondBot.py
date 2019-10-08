@@ -20,7 +20,7 @@ def send_text(message, keyboard=True):
         bot.send_sticker(message.chat.id, 'CAADAwADjgIAAsbNxQEarlhixib2CBYE')
     elif message.text.lower() == 'поиск':
         keyboard = types.InlineKeyboardMarkup()
-        url_button = types.InlineKeyboardButton(text="Mybe you'll need go to google nigga", url="https://google.com.ua")
+        url_button = types.InlineKeyboardButton(text="GOOGLE", url="https://google.com.ua")
         keyboard.add(url_button)
         bot.send_message(message.chat.id, "Привет! Нажми на кнопку и перейди в поисковик.", reply_markup=keyboard)
 @bot.message_handler(content_types=['sticker'])

@@ -1,50 +1,61 @@
-
 import telebot
-from telebot import types
+import config
+import dbworker
 
 bot = telebot.TeleBot('908554907:AAH_zDPUMDOqjS3SAhNqoJ__EWmX3w9wsQo');
 
 
-@bot.message_handler(commands=["geophone"])
-def geophone(message):
-    keyboard = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
-    button_phone = types.KeyboardButton(text="Отправить номер телефона", request_contact=True)
-    button_geo = types.KeyboardButton(text="Отправить местоположение", request_location=True)
-    keyboard.add(button_phone, button_geo)
-    bot.send_message(message.chat.id,
-                     text="Отправь мне свой номер телефона или поделись местоположением, жалкий человечишка!",
-                     reply_markup=keyboard)
+# Начало диалога
+@bot.message_handler(commands=["start"])
+def cmd_start(message):
+    state = dbworker.get_current_state(message.chat.id)
+    if state == config.States.S_ENTER_NAME.value:
+        bot.send_message(message.chat.id, "Кажется, кто-то обещал отправить своё имя, но так и не сделал этого :( Жду...")
+    elif state == config.States.S_ENTER_AGE.value:
+        bot.send_message(message.chat.id, "Кажется, кто-то обещал отправить свой возраст, но так и не сделал этого :( Жду...")
+    elif state == config.States.S_SEND_PIC.value:
+        bot.send_message(message.chat.id, "Кажется, кто-то обещал отправить картинку, но так и не сделал этого :( Жду...")
+    else:  # Под "остальным" понимаем состояние "0" - начало диалога
+        bot.send_message(message.chat.id, "Привет! Как я могу к тебе обращаться?")
+        dbworker.set_state(message.chat.id, config.States.S_ENTER_NAME.value)
+
+# По команде /reset будем сбрасывать состояния, возвращаясь к началу диалога
+@bot.message_handler(commands=["reset"])
+def cmd_reset(message):
+    bot.send_message(message.chat.id, "Что ж, начнём по-новой. Как тебя зовут?")
+    dbworker.set_state(message.chat.id, config.States.S_ENTER_NAME.value)
+
+@bot.message_handler(func=lambda message: dbworker.get_current_state(message.chat.id) == config.States.S_ENTER_NAME.value)
+def user_entering_name(message):
+    # В случае с именем не будем ничего проверять, пусть хоть "25671", хоть Евкакий
+    bot.send_message(message.chat.id, "Отличное имя, запомню! Теперь укажи, пожалуйста, свой возраст.")
+    dbworker.set_state(message.chat.id, config.States.S_ENTER_AGE.value)
 
 
-@bot.message_handler(func=lambda message: True)
-def any_message(message):
-    bot.reply_to(message, "Сам {!s}".format(message.text))
+@bot.message_handler(func=lambda message: dbworker.get_current_state(message.chat.id) == config.States.S_ENTER_AGE.value)
+def user_entering_age(message):
+    # А вот тут сделаем проверку
+    if not message.text.isdigit():
+        # Состояние не меняем, поэтому только выводим сообщение об ошибке и ждём дальше
+        bot.send_message(message.chat.id, "Что-то не так, попробуй ещё раз!")
+        return
+    # На данном этапе мы уверены, что message.text можно преобразовать в число, поэтому ничем не рискуем
+    if int(message.text) < 5 or int(message.text) > 100:
+        bot.send_message(message.chat.id, "Какой-то странный возраст. Не верю! Отвечай честно.")
+        return
+    else:
+        # Возраст введён корректно, можно идти дальше
+        bot.send_message(message.chat.id, "Когда-то и мне было столько лет...эх... Впрочем, не будем отвлекаться. "
+                                          "Отправь мне какую-нибудь фотографию.")
+        dbworker.set_state(message.chat.id, config.States.S_SEND_PIC.value)
 
-
-@bot.edited_message_handler(func=lambda message: True)
-def edit_message(message):
-    bot.edit_message_text(chat_id=message.chat.id,
-                          text="Сам {!s}".format(message.text),
-                          message_id=message.message_id + 1)
-
-
-@bot.inline_handler(func=lambda query: True)
-def inline_mode(query):
-    capibara1 = types.InlineQueryResultCachedPhoto(
-        id="1",
-        photo_file_id="AgADAgAD6rMxGyBnGwABgBmcoHgy6IENAAQSYK_1gyoAAU-5aQACAg",
-        caption="Это капибара №1"
-    )
-    capibara2 = types.InlineQueryResultCachedPhoto(
-        id="2",
-        photo_file_id="AgADAgAD67MxGyBnGwABCvqPIYxMNHENAAS51HjO88y_Z0ffAQABAg",
-        caption="Это капибара №2"
-    )
-    bot.answer_inline_query(query.id, [capibara1, capibara2])
-
+@bot.message_handler(content_types=["photo"],
+                     func=lambda message: dbworker.get_current_state(message.chat.id) == config.States.S_SEND_PIC.value)
+def user_sending_photo(message):
+    # То, что это фотография, мы уже проверили в хэндлере, никаких дополнительных действий не нужно.
+    bot.send_message(message.chat.id, "Отлично! Больше от тебя ничего не требуется. Если захочешь пообщаться снова - "
+                     "отправь команду /start.")
+    dbworker.set_state(message.chat.id, config.States.S_START.value)
 
 if __name__ == "__main__":
     bot.polling(none_stop=True)
-
-
-
