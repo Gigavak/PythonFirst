@@ -1,3 +1,7 @@
-test = "String"
-name = input("Whats up?")
-print("hello world" , name, test)
+import time
+
+time.strftime('%I:%M')
+
+
+
+
