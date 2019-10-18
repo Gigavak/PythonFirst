@@ -1,3 +1,3 @@
-worker: python secondBot.py
 worker: python thirdBot.py
-worker: python fallMallBot.py
+worker: python secondBot.py
+
