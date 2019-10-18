@@ -1,13 +1,14 @@
-import dj_database_url
 import psycopg2
+conn = psycopg2.connect(dbname='denuo82q39ehts', user='szemsvpgvnldkv',
+                        password='903a030fa35ce27e441187812839c4bff0a11ee9d65135fadaf5492fbbb2c68e', host='ec2-174-129-241-114.compute-1.amazonaws.com')
+cursor = conn.cursor()
 
-DATABASELINK = "postgres://szemsvpgvnldkv:903a030fa35ce27e441187812839c4bff0a11ee9d65135fadaf5492fbbb2c68e@ec2-174-129-241-114.compute-1.amazonaws.com:5432/denuo82q39ehts"
+cursor.execute("""insert into users (name, id) values ('sssddas', 22) """)
+records = cursor.fetchall()
+cursor.close()
+conn.close()
 
 
-db_info = dj_database_url.config(default=DATABASELINK)
-connection = psycopg2.connect(database=db_info.get('denuo82q39ehts'),
-		    		user=db_info.get('szemsvpgvnldkv'),
-		    		password=db_info.get('903a030fa35ce27e441187812839c4bff0a11ee9d65135fadaf5492fbbb2c68e'),
-		    		host=db_info.get('ec2-174-129-241-114.compute-1.amazonaws.com'),
-		    		port=db_info.get('5432'))
-cursor = connection.cursor()
+
+
+
