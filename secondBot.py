@@ -20,11 +20,10 @@ def start_command(message):
 @bot.message_handler(commands=['help'])
 def help_command(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
-    keyboard.add(
-        telebot.types.InlineKeyboardButton(
-            'Message to developer', url='telegram.me/gigavak'
-  )
-    )
+    keyboard.add()
+    #    telebot.types.InlineKeyboardButton(
+     #       'Message to developer', url='telegram.me/gigavak'
+  #))
     bot.send_message(
         message.chat.id,
         '1) To receive a list of available currencies press /exchange.\n' +

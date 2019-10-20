@@ -3,7 +3,7 @@ import requests
 import json
 
 URL = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
-
+#https://api.monobank.ua/bank/currency
 
 def load_exchange():
     return json.loads(requests.get(URL).text)
