@@ -2,8 +2,7 @@ import telebot
 from aiogram.utils import json
 
 import config
-
-
+import pb
 
 bot = telebot.TeleBot(config.TOKEN)
 
@@ -15,15 +14,16 @@ def start_command(message):
         'Greetings! I can show you exchange rates.\n' +
         'To get the exchange rates press /exchange.\n' +
         'To get help press /help.'
-  )
+    )
+
 
 @bot.message_handler(commands=['help'])
 def help_command(message):
     keyboard = telebot.types.InlineKeyboardMarkup()
     keyboard.add()
     #    telebot.types.InlineKeyboardButton(
-     #       'Message to developer', url='telegram.me/gigavak'
-  #))
+    #       'Message to developer', url='telegram.me/gigavak'
+    # ))
     bot.send_message(
         message.chat.id,
         '1) To receive a list of available currencies press /exchange.\n' +
@@ -59,6 +59,7 @@ def get_ex_callback(query):
     bot.answer_callback_query(query.id)
     send_exchange_result(query.message, query.data[4:])
 
+
 def send_exchange_result(message, ex_code):
     bot.send_chat_action(message.chat.id, 'typing')
     import pb
@@ -66,26 +67,28 @@ def send_exchange_result(message, ex_code):
     bot.send_message(
         message.chat.id, serialize_ex(ex),
         reply_markup=get_update_keyboard(ex),
-	parse_mode='HTML'
+        parse_mode='HTML'
     )
+
 
 def get_update_keyboard(ex):
     keyboard = telebot.types.InlineKeyboardMarkup()
     keyboard.row(
         telebot.types.InlineKeyboardButton(
             'Update',
-	    callback_data=json.dumps({
+            callback_data=json.dumps({
                 't': 'u',
-		'e': {
+                'e': {
                     'b': ex['buy'],
-		    's': ex['sale'],
-		    'c': ex['ccy']
+                    's': ex['sale'],
+                    'c': ex['ccy']
                 }
             }).replace(' ', '')
         ),
-	telebot.types.InlineKeyboardButton('Share', switch_inline_query=ex['ccy'])
+        telebot.types.InlineKeyboardButton('Share', switch_inline_query=ex['ccy'])
     )
     return keyboard
+
 
 def serialize_ex(ex_json, diff=None):
     result = '<b>' + ex_json['base_ccy'] + ' -> ' + ex_json['ccy'] + ':</b>\n\n' + \
@@ -102,15 +105,18 @@ def serialize_ex(ex_json, diff=None):
 def serialize_exchange_diff(diff):
     result = ''
     if diff > 0:
-        result = '(' + str(diff) + ' <img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="↗️" src="https://s.w.org/images/core/emoji/2.3/svg/2197.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2197.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2197.svg">" src="https://s.w.org/images/core/emoji/72x72/2197.png">" src="https://s.w.org/images/core/emoji/72x72/2197.png">)'
+        result = '(' + str(
+            diff) + ' <img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="↗️" src="https://s.w.org/images/core/emoji/2.3/svg/2197.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2197.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2197.svg">" src="https://s.w.org/images/core/emoji/72x72/2197.png">" src="https://s.w.org/images/core/emoji/72x72/2197.png">)'
     elif diff < 0:
-        result = '(' + str(diff)[1:] + ' <img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="↘️" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/72x72/2198.png">" src="https://s.w.org/images/core/emoji/72x72/2198.png">)'
+        result = '(' + str(diff)[
+                       1:] + ' <img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="↘️" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/72x72/2198.png">" src="https://s.w.org/images/core/emoji/72x72/2198.png">)'
     return result
 
+
 @bot.callback_query_handler(func=lambda call: True)
-def iq_callback(query):  
-    data = query.data  
-    if data.startswith('get-'):  
+def iq_callback(query):
+    data = query.data
+    if data.startswith('get-'):
         get_ex_callback(query)
 
 
@@ -126,31 +132,45 @@ def iq_callback(query):
         except ValueError:
             pass
 
+
+def get_exchange_diff(param, exchange_now):
+    pass
+
+
+def get_edited_signature():
+    pass
+
+
+def get_ex_from_iq_data(data):
+    pass
+
+
 def edit_message_callback(query):
     data = json.loads(query.data)['e']
     exchange_now = pb.get_exchange(data['c'])
     text = serialize_ex(
         exchange_now,
-	get_exchange_diff(
+        get_exchange_diff(
             get_ex_from_iq_data(data),
-	    exchange_now
+            exchange_now
         )
     ) + '\n' + get_edited_signature()
     if query.message:
         bot.edit_message_text(
             text,
-	    query.message.chat.id,
-	    query.message.message_id,
-	    reply_markup=get_update_keyboard(exchange_now),
-	    parse_mode='HTML'
-	)
+            query.message.chat.id,
+            query.message.message_id,
+            reply_markup=get_update_keyboard(exchange_now),
+            parse_mode='HTML'
+        )
     elif query.inline_message_id:
         bot.edit_message_text(
             text,
-	    inline_message_id=query.inline_message_id,
-	    reply_markup=get_update_keyboard(exchange_now),
-	    parse_mode='HTML'
-	)
+            inline_message_id=query.inline_message_id,
+            reply_markup=get_update_keyboard(exchange_now),
+            parse_mode='HTML'
+        )
+
 
 @bot.inline_handler(func=lambda query: True)
 def query_text(inline_query):
@@ -159,22 +179,24 @@ def query_text(inline_query):
         get_iq_articles(pb.get_exchanges(inline_query.query))
     )
 
+
 def get_iq_articles(exchanges):
     result = []
     for exc in exchanges:
         result.append(
             telebot.types.InlineQueryResultArticle(
                 id=exc['ccy'],
-	        title=exc['ccy'],
-	        input_message_content=telebot.types.InputTextMessageContent(
+                title=exc['ccy'],
+                input_message_content=telebot.types.InputTextMessageContent(
                     serialize_ex(exc),
-		    parse_mode='HTML'
-		),
-	        reply_markup=get_update_keyboard(exc),
-	        description='Convert ' + exc['base_ccy'] + ' -> ' + exc['ccy'],
-	        thumb_height=1
-	    )
+                    parse_mode='HTML'
+                ),
+                reply_markup=get_update_keyboard(exc),
+                description='Convert ' + exc['base_ccy'] + ' -> ' + exc['ccy'],
+                thumb_height=1
+            )
         )
     return result
+
 
 bot.polling(none_stop=True)
